@@ -84,14 +84,14 @@
 
         });
     }
-    function searchServices(query) {
+    function searchServices(query, page = 0, size = 4) {
         $.ajax({
             type: "GET",
             url: "/paper/service/search",
             data: {
                 q: query,
-                size: 100, // Ajusta este número según tus necesidades
-                page: 0
+                size: size,
+                page: page
             },
             success: function(response) {
                 renderSearchResults(response);
@@ -100,10 +100,17 @@
         });
     }
 
-    function renderSearchResults(services) {
+    function renderSearchResults(response) {
         let resultsDiv = $('#searchResults');
         resultsDiv.empty(); // Limpiar los resultados anteriores
 
+        if (!response) {
+            console.log('No response', response);
+            return;
+        }
+
+        console.log(response);
+        let services = response.content;
         let tableHtml = '<table><tr><th>ID</th><th>Name</th><th>Cost</th><th>Date</th></tr>';
         for (let i = 0; i < services.length; i++) {
             tableHtml += '<tr>' +
@@ -114,9 +121,25 @@
                 '</tr>';
         }
         tableHtml += '</table>';
-
         resultsDiv.append(tableHtml);
+
+        // Agregar botones de paginación
+        let totalPages = response.totalPages;
+        let paginationDiv = $('<div>');
+        for (let i = 0; i < totalPages; i++) {
+            let btn = $('<button>').text(i + 1);
+            btn.click(function () {
+                searchServices($('#query').val(), i);
+            });
+            paginationDiv.append(btn);
+        }
+        resultsDiv.append(paginationDiv);
     }
+        function clearSearchResults() {
+            let resultsDiv = $('#searchResults');
+            resultsDiv.empty(); // Limpiar los resultados de la búsqueda
+            refetch();
+        }
 
 </script>
 
@@ -142,6 +165,7 @@
     <input type="text" id="query" placeholder="Search">
     <hr>
     <button class="button" onclick="searchServices($('#query').val())">Buscar</button>
+    <button class="button" onclick="clearSearchResults()">Limpiar</button>
 </div>
 
 <div id="searchResults">

@@ -10,7 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ServiceController {
@@ -38,11 +40,19 @@ public class ServiceController {
 
     @GetMapping("/paper/service/search")
     @ResponseBody
-    public ResponseEntity<List<ServiceDto>> search(@RequestParam("size") Integer size,
-                                                   @RequestParam("page") Integer page,
-                                                   @RequestParam(value = "q", required = false) String query,
-                                                   @RequestParam(value = "sort", required = false) String sort,
-                                                   @RequestParam(value = "direction", required = false) String direction) {
-        return ResponseEntity.ok(serviceService.search(page, size, query, sort, direction));
+    public ResponseEntity<Map<String, Object>> search(@RequestParam("size") Integer size,
+                                                      @RequestParam("page") Integer page,
+                                                      @RequestParam(value = "q", required = false) String query,
+                                                      @RequestParam(value = "sort", required = false) String sort,
+                                                      @RequestParam(value = "direction", required = false) String direction) {
+        Page<ServiceDto> servicePage = serviceService.search(page, size, query, sort, direction);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", servicePage.getContent());
+        response.put("totalPages", servicePage.getTotalPages());
+        response.put("totalElements", servicePage.getTotalElements());
+        response.put("currentPage", servicePage.getNumber());
+
+        return ResponseEntity.ok(response);
     }
 }

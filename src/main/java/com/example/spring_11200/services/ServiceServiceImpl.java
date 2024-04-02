@@ -36,7 +36,7 @@ public class ServiceServiceImpl implements ServiceService {
         return serviceRepository.findAll(pageRequest).map(ServiceDto::of);
     }
 
-    public List<ServiceDto> search(Integer page, Integer size, String query, String sortParameter, String directionParametr) {
+    public Page<ServiceDto> search(Integer page, Integer size, String query, String sortParameter, String directionParametr) {
         Sort.Direction direction = Sort.Direction.ASC;
         Sort sort = Sort.by(direction, "id");
 
@@ -57,6 +57,7 @@ public class ServiceServiceImpl implements ServiceService {
         }
         PageRequest pageRequest = PageRequest.of(page, size, sort);
         Page<Service> papersPage = serviceRepository.search(query, pageRequest);
-        return ServiceDto.from(papersPage.getContent());
+        Page<ServiceDto> serviceDtoPage = papersPage.map(ServiceDto::of);
+        return serviceDtoPage;
     }
 }

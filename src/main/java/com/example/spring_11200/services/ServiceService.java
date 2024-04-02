@@ -13,5 +13,5 @@ public interface ServiceService {
 
     Page<ServiceDto> getAllServices(int page, int size);
 
-    List<ServiceDto> search(Integer page, Integer size, String query, String sortParametr, String direction);
+    Page<ServiceDto> search(Integer page, Integer size, String query, String sortParametr, String direction);
 }
