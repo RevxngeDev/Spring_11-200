@@ -38,8 +38,8 @@ public class ServiceController {
 
     @GetMapping("/paper/service/search")
     @ResponseBody
-    public ResponseEntity<List<ServiceDto>> search(@RequestParam(value = "size", defaultValue = "3") Integer size,
-                                                   @RequestParam(value = "page", defaultValue = "0") Integer page,
+    public ResponseEntity<List<ServiceDto>> search(@RequestParam("size") Integer size,
+                                                   @RequestParam("page") Integer page,
                                                    @RequestParam(value = "q", required = false) String query,
                                                    @RequestParam(value = "sort", required = false) String sort,
                                                    @RequestParam(value = "direction", required = false) String direction) {

@@ -84,18 +84,40 @@
 
         });
     }
-    function searchServices(query, page = 0, size = 3) {
+    function searchServices(query) {
         $.ajax({
             type: "GET",
-            url: "/paper/service/search?q=" + query + "&page=" + page + "&size=" + size,
-            success: function (response) {
-                renderTable(response.content, $('#table')); // assuming response is an object with properties 'content' and 'totalPages'
-                generatePaginationButtons(response.totalPages);
+            url: "/paper/service/search",
+            data: {
+                q: query,
+                size: 100, // Ajusta este número según tus necesidades
+                page: 0
             },
-            dataType: "json",
-            contentType: "application/json"
+            success: function(response) {
+                renderSearchResults(response);
+            },
+            dataType: "json"
         });
     }
+
+    function renderSearchResults(services) {
+        let resultsDiv = $('#searchResults');
+        resultsDiv.empty(); // Limpiar los resultados anteriores
+
+        let tableHtml = '<table><tr><th>ID</th><th>Name</th><th>Cost</th><th>Date</th></tr>';
+        for (let i = 0; i < services.length; i++) {
+            tableHtml += '<tr>' +
+                '<td>' + services[i]['id'] + '</td>' +
+                '<td>' + services[i]['name'] + '</td>' +
+                '<td>' + services[i]['cost'] + '</td>' +
+                '<td>' + services[i]['date'] + '</td>' +
+                '</tr>';
+        }
+        tableHtml += '</table>';
+
+        resultsDiv.append(tableHtml);
+    }
+
 </script>
 
 <div class="container">
@@ -112,11 +134,20 @@
                                $('#cost').val(), $('#date').val()
                               )">Добавить</button>
 </div>
-<form onsubmit="event.preventDefault(); searchServices($('#search').val());">
-    <input type="text" id="search" name="q" placeholder="Search services">
 
-    <button type="submit">Search</button>
-</form>
+<div class="container">
+    <h1>Search</h1>
+    <hr>
+    <label><b>Query</b></label>
+    <input type="text" id="query" placeholder="Search">
+    <hr>
+    <button class="button" onclick="searchServices($('#query').val())">Buscar</button>
+</div>
+
+<div id="searchResults">
+
+</div>
+
 <div>
     <table id="table">
         <tr>
