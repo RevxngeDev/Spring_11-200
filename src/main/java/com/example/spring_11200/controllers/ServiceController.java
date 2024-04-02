@@ -4,6 +4,7 @@ import com.example.spring_11200.dto.ServiceDto;
 import com.example.spring_11200.dto.ServiceForm;
 import com.example.spring_11200.services.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,16 +23,23 @@ public class ServiceController {
         return ResponseEntity.ok(serviceService.addService(serviceForm));
     }
 
-     @GetMapping("/allservices")
-     public String getAllServices(Model model){
-         model.addAttribute("servicesList",serviceService.getAllServices());
-         return "service";
-     }
+    @GetMapping("/service")
+    public String getAllServices(Model model, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "3") int size){
+        Page<ServiceDto> services = serviceService.getAllServices(page, size);
+        model.addAttribute("servicesList", services.getContent());
+        return "service";
+    }
+
+    @GetMapping("/allservices")
+    @ResponseBody
+    public ResponseEntity<Page<ServiceDto>> getAllServices(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "3") int size){
+        return ResponseEntity.ok(serviceService.getAllServices(page, size));
+    }
 
     @GetMapping("/paper/service/search")
     @ResponseBody
-    public ResponseEntity<List<ServiceDto>> search(@RequestParam("size") Integer size,
-                                                   @RequestParam("page") Integer page,
+    public ResponseEntity<List<ServiceDto>> search(@RequestParam(value = "size", defaultValue = "3") Integer size,
+                                                   @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                    @RequestParam(value = "q", required = false) String query,
                                                    @RequestParam(value = "sort", required = false) String sort,
                                                    @RequestParam(value = "direction", required = false) String direction) {

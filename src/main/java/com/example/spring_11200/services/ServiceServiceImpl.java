@@ -30,8 +30,9 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public List<ServiceDto> getAllServices() {
-        return ServiceDto.from(serviceRepository.findAll());
+    public Page<ServiceDto> getAllServices(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return serviceRepository.findAll(pageRequest).map(ServiceDto::of);
     }
 
     public List<ServiceDto> search(Integer page, Integer size, String query, String sortParameter, String directionParametr) {

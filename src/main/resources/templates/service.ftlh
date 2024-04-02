@@ -14,6 +14,55 @@
 <body>
 
 <script>
+
+    $(document).ready(function() {
+        refetch();
+    });
+
+    let currentPage = 0;
+
+    let refetch = (page = 0, size = 3) =>{
+        $.ajax({
+            type: "GET",
+            url: "/allservices?page=" + page + "&size=" + size,
+            success: function (response) {
+                renderTable (response.content, $('#table'));
+                generatePaginationButtons(response.totalPages);
+            },
+            dataType: "json",
+            contentType: "application/json"
+        })
+    }
+    function generatePaginationButtons(totalPages) {
+        let paginationDiv = $('#pagination');
+        paginationDiv.empty();
+
+        for (let i = 0; i < totalPages; i++) {
+            let btn = $('<button>').text(i + 1);
+            btn.click(function() {
+                refetch(i);
+            });
+            paginationDiv.append(btn);
+        }
+    }
+    function renderTable(services, table) {
+
+        let innerHtml = '<tr>\n' +
+            '            <th>id</th>\n' +
+            '            <th>Name</th>\n' +
+            '            <th>Cost</th>\n' +
+            '            <th>Date</th>\n' +
+            '        </tr>';
+        for (let i = 0; i < services.length; i++) {
+            innerHtml += '<tr>' ;
+            innerHtml += '  <td>' + services[i]['id'] + '</td>' ;
+            innerHtml += '  <td>' + services[i]['name'] + '</td>' ;
+            innerHtml += '  <td>' + services[i]['cost'] + '</td>' ;
+            innerHtml += '  <td>' + services[i]['date'] + '</td>' ;
+            innerHtml += '</tr>';
+        }
+        table.html(innerHtml);
+    }
     function sendService(name, cost, date) {
         let data = {
             "name": name,
@@ -27,10 +76,25 @@
             type: "POST",
             url: "/services",
             data: JSON.stringify(data),
+            success: function () {
+                refetch();
+            },
+            dataType: "json",
+            contentType: "application/json"
+
+        });
+    }
+    function searchServices(query, page = 0, size = 3) {
+        $.ajax({
+            type: "GET",
+            url: "/paper/service/search?q=" + query + "&page=" + page + "&size=" + size,
+            success: function (response) {
+                renderTable(response.content, $('#table')); // assuming response is an object with properties 'content' and 'totalPages'
+                generatePaginationButtons(response.totalPages);
+            },
             dataType: "json",
             contentType: "application/json"
         });
-
     }
 </script>
 
@@ -48,7 +112,11 @@
                                $('#cost').val(), $('#date').val()
                               )">Добавить</button>
 </div>
+<form onsubmit="event.preventDefault(); searchServices($('#search').val());">
+    <input type="text" id="search" name="q" placeholder="Search services">
 
+    <button type="submit">Search</button>
+</form>
 <div>
     <table id="table">
         <tr>
@@ -67,5 +135,7 @@
         </#list>
     </table>
 </div>
+
+    <div id="pagination"></div>
 </body>
 </html>
