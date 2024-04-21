@@ -19,9 +19,8 @@
         refetch();
     });
 
-    let currentPage = 0;
 
-    let refetch = (page = 0, size = 3) =>{
+    let refetch = (page = 0, size = 4) =>{
         $.ajax({
             type: "GET",
             url: "/allservices?page=" + page + "&size=" + size,
@@ -108,7 +107,6 @@
             console.log('No response', response);
             return;
         }
-
         console.log(response);
         let services = response.content;
         let tableHtml = '<table><tr><th>ID</th><th>Name</th><th>Cost</th><th>Date</th></tr>';
@@ -123,7 +121,6 @@
         tableHtml += '</table>';
         resultsDiv.append(tableHtml);
 
-        // Agregar botones de paginación
         let totalPages = response.totalPages;
         let paginationDiv = $('<div>');
         for (let i = 0; i < totalPages; i++) {
@@ -137,7 +134,7 @@
     }
         function clearSearchResults() {
             let resultsDiv = $('#searchResults');
-            resultsDiv.empty(); // Limpiar los resultados de la búsqueda
+            resultsDiv.empty();
             refetch();
         }
 

@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+
 
 @Component
 public class ServiceServiceImpl implements ServiceService {
@@ -29,6 +29,8 @@ public class ServiceServiceImpl implements ServiceService {
         serviceRepository.save(service);
         return ServiceDto.of(service);
     }
+    //Page se usa para crear un objeto pagerequest y les damos los parametros que queremos en la pagina
+    //caundo llamamos con el repositorio, el realiza las busqueda y encapula los resultados en un objeto Page
 
     @Override
     public Page<ServiceDto> getAllServices(int page, int size) {
@@ -61,3 +63,6 @@ public class ServiceServiceImpl implements ServiceService {
         return serviceDtoPage;
     }
 }
+// Crear un objeto PageRequest que especifica qué página, cuántos resultados por página y cómo ordenar los resultados
+// Llamar al método de búsqueda del repositorio, que devuelve una Page de servicios
+// Convertir cada servicio a un DTO y devolver la Page de DTOs
