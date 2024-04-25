@@ -17,6 +17,9 @@ public class SignUpServiceImpl implements SignUpService{
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private SmsService smsService;
+
     @Override
     public void addUser(UserForm form) {
         User user = User.builder()
@@ -28,5 +31,6 @@ public class SignUpServiceImpl implements SignUpService{
                 .role(Role.USER)
                 .build();
         usersRepository.save(user);
+        smsService.sendSms(form.getPhone(), "Вы зарегистрованы!");
     }
 }
