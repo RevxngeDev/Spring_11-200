@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -24,7 +25,7 @@ public class FileStorageServiceImpl implements FileStorageService{
     private FilesRepository filesRepository;
 
     @Override
-    public String saveFile(MultipartFile file) {
+    public String saveFile(MultipartFile file, String description) {
         String storageName = UUID.randomUUID().toString() + "." +
                 FilenameUtils.getExtension(file.getOriginalFilename());
 
@@ -36,6 +37,7 @@ public class FileStorageServiceImpl implements FileStorageService{
                 .size(file.getSize())
                 .storageFileName(storageName)
                 .url(storagePath + "\\" + storageName)
+                .description(description)
                 .build();
         try {
             Files.copy(file.getInputStream(), Paths.get(storagePath, storageName));
@@ -59,6 +61,23 @@ public class FileStorageServiceImpl implements FileStorageService{
             response.flushBuffer();
         } catch (Exception e) {
             throw new RuntimeException("Could not read the file. Error: " + e.getMessage());
+        }
+    }
+    public List<FileInfo> getAllFiles(){
+        return filesRepository.findAll();
+    }
+
+    @Override
+    public void likeFile(long fileId) {
+        FileInfo file = filesRepository.findById(fileId).orElse(null);
+        if (file != null) {
+            Integer likes = file.getLikes();
+            if (likes!=null) {
+                file.setLikes(likes + 1);
+            } else {
+                file.setLikes(1);
+            }
+            filesRepository.save(file);
         }
     }
 }
