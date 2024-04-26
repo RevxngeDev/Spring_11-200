@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Stack;
 
 @Data
 @Builder
@@ -32,7 +33,11 @@ public class User {
     @ManyToMany(mappedBy = "likes")
     private List<Article> likedArticeles;
 
-    private String confirmed;
+    @Enumerated(value = EnumType.STRING)
+    private State state;
+
+    private String confirmCode;
+
     private Role role;
 
 }
